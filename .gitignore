@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+.hk-capture/
+.env
+.cursor/mcp.json
