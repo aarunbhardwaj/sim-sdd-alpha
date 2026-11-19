@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import Response
 
 from handoff.models import Handoff, HandoffCreate
 from handoff.store import connect, init_db, insert_handoff, query_handoffs
@@ -73,6 +74,35 @@ def list_handoffs(
     )
 
 
-@router.get("/handoffs/briefing", status_code=501)
-def export_briefing() -> None:
-    raise HTTPException(status_code=501, detail="not implemented")
+def render_briefing(rows: list[Handoff], since: datetime, until: datetime) -> str:
+    lines = [
+        "# Shift briefing",
+        "",
+        f"Period: {since.isoformat()} to {until.isoformat()}",
+        "",
+    ]
+    for row in rows:
+        lines.append(
+            f"- **{row.severity}** {row.summary} ({row.author_id}, {row.created_at.isoformat()})"
+        )
+    text = "\n".join(lines)
+    if not text.endswith("\n"):
+        text += "\n"
+    return text
+
+
+@router.get("/handoffs/briefing")
+def export_briefing(
+    conn: Annotated[sqlite3.Connection, Depends(get_conn)],
+    since: str | None = None,
+    until: str | None = None,
+) -> Response:
+    if since is None or until is None:
+        raise HTTPException(status_code=400, detail="since and until are required")
+    since_at = parse_instant(since)
+    until_at = parse_instant(until)
+    if since_at > until_at:
+        raise HTTPException(status_code=400, detail="invalid time window")
+    rows = query_handoffs(conn, limit=10000, since=since_at, until=until_at)
+    body = render_briefing(rows, since_at, until_at)
+    return Response(content=body, media_type="text/markdown")
