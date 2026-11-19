@@ -3,3 +3,5 @@ __pycache__/
 .hk-capture/
 .env
 .cursor/mcp.json
+.venv/
+data/*.db
