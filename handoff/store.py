@@ -63,3 +63,45 @@ def insert_handoff(conn: sqlite3.Connection, payload: HandoffCreate) -> Handoff:
 def count_handoffs(conn: sqlite3.Connection) -> int:
     row = conn.execute("SELECT COUNT(*) AS n FROM handoffs").fetchone()
     return int(row["n"])
+
+
+def query_handoffs(
+    conn: sqlite3.Connection,
+    *,
+    limit: int,
+    severity: str | None = None,
+    since: datetime | None = None,
+    until: datetime | None = None,
+) -> list[Handoff]:
+    clauses: list[str] = []
+    params: list[object] = []
+    if severity is not None:
+        clauses.append("severity = ?")
+        params.append(severity)
+    if since is not None:
+        clauses.append("created_at >= ?")
+        params.append(since.isoformat())
+    if until is not None:
+        clauses.append("created_at <= ?")
+        params.append(until.isoformat())
+    where = f" WHERE {' AND '.join(clauses)}" if clauses else ""
+    rows = conn.execute(
+        f"""
+        SELECT id, author_id, created_at, severity, summary
+        FROM handoffs
+        {where}
+        ORDER BY created_at DESC, id DESC
+        LIMIT ?
+        """,
+        (*params, limit),
+    ).fetchall()
+    return [
+        Handoff(
+            id=row["id"],
+            author_id=row["author_id"],
+            created_at=datetime.fromisoformat(row["created_at"]),
+            severity=row["severity"],
+            summary=row["summary"],
+        )
+        for row in rows
+    ]
