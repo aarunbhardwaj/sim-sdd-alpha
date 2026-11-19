@@ -19,5 +19,5 @@ Backlog order: Task 1, then Task 2, then Task 3. Task 4 is stretch and stays dra
 | --- | --- | --- | --- | --- | --- | --- |
 | specs/handoff-create.md | AC-HANDOFF-CREATE-1,AC-HANDOFF-CREATE-2,AC-HANDOFF-CREATE-3 | M | 2 | task-b5fbc1313dc5 | | registered |
 | specs/handoff-list.md | AC-HANDOFF-LIST-1,AC-HANDOFF-LIST-2,AC-HANDOFF-LIST-3 | M | 2 | task-20692687de41 | | registered |
-| specs/handoff-export.md | AC-HANDOFF-EXPORT-1,AC-HANDOFF-EXPORT-2 | S | 3 | | | |
+| specs/handoff-export.md | AC-HANDOFF-EXPORT-1,AC-HANDOFF-EXPORT-2 | S | 3 | task-a07c708eff00 | | registered |
 | specs/handoff-ui.md | AC-HANDOFF-UI-1,AC-HANDOFF-UI-2 | L | 2 | | | |
