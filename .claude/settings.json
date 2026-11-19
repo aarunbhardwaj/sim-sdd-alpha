@@ -1,0 +1,13 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {"hooks": [{"type": "command", "command": "python3 capture/hk-capture.py hook"}]}
+    ],
+    "PostToolUse": [
+      {"hooks": [{"type": "command", "command": "python3 capture/hk-capture.py hook"}]}
+    ],
+    "Stop": [
+      {"hooks": [{"type": "command", "command": "python3 capture/hk-capture.py hook"}]}
+    ]
+  }
+}

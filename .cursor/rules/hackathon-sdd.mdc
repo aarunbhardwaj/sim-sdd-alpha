@@ -1,0 +1,13 @@
+---
+description: Hackathon spec-driven capture for this repository
+globs:
+  - "**/*"
+---
+
+Before the first implementation commit for an unregistered EVAL row, call the hosted tool practice.register_task and keep the returned Spec and Practice trailers on later commits.
+
+Call practice.record_hook_event only with derived features: lengths, hashes, path refs, line counts, and exit codes. Do not send prompt text, completions, command output, or secrets.
+
+IDE event consent is required. These hook calls are instrumentation and are not scored.
+
+Activate `.githooks` with `git config core.hooksPath .githooks` and an executable bit on `post-commit` and `prepare-commit-msg`. Run `python3 capture/hk-capture.py status`, `sync-sessions --all`, and `test -- <command>`. Keep sessions grounded in `specs/`.
