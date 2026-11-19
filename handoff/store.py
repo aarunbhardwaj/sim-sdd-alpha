@@ -1,9 +1,13 @@
-"""SQLite access. Query methods are stubs until their tasks."""
+"""SQLite access for handoff records."""
 
 from __future__ import annotations
 
 import sqlite3
+import uuid
+from datetime import UTC, datetime
 from pathlib import Path
+
+from handoff.models import Handoff, HandoffCreate
 
 DEFAULT_DB = Path("data/handoffs.db")
 
@@ -29,3 +33,33 @@ def init_db(conn: sqlite3.Connection) -> None:
         """
     )
     conn.commit()
+
+
+def insert_handoff(conn: sqlite3.Connection, payload: HandoffCreate) -> Handoff:
+    record = Handoff(
+        id=str(uuid.uuid4()),
+        author_id=payload.author_id,
+        created_at=datetime.now(UTC),
+        severity=payload.severity,
+        summary=payload.summary,
+    )
+    conn.execute(
+        """
+        INSERT INTO handoffs (id, author_id, created_at, severity, summary)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            record.id,
+            record.author_id,
+            record.created_at.isoformat(),
+            record.severity,
+            record.summary,
+        ),
+    )
+    conn.commit()
+    return record
+
+
+def count_handoffs(conn: sqlite3.Connection) -> int:
+    row = conn.execute("SELECT COUNT(*) AS n FROM handoffs").fetchone()
+    return int(row["n"])
