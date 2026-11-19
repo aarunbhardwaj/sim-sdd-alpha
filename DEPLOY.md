@@ -1,33 +1,38 @@
-# Deploy scaffold
-
-Server prompt-bundle scaffold only. An unchanged or partially filled file is
-not a deploy path. An executed provider workflow collected by the platform is
-separate observable evidence.
-
-Deploy signals are **team-level** observability. They do not change participant markers,
-confidence, scores, arms, or rubric 2.1.0 pooled task rows. CI/CD
-conclusions establish observability only, not product quality.
+# Deploy
 
 ## Deployment target
 
-FILL: environment or target description without credentials or secret URLs
+Local machine only. One process listens on `http://127.0.0.1:8000`. SQLite data lives in `data/handoffs.db`, created on first request. No hosted environment and no credentials.
 
 ## Workflow
 
-FILL: workflow name or path placeholder without provider tokens
+From the repository root:
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/uvicorn handoff.main:app --host 127.0.0.1 --port 8000
+```
+
+`scripts/run.sh` starts the same server with reload when the script is executable.
 
 ## Verification
 
-Document immediate checks as **examples** only (smoke, e2e, health, post-deploy).
-Do not assert a check ran from this template.
+These are the checks to run after the process is up. They are the local smoke path for this sprint.
 
-- FILL: example smoke check description
-- FILL: example health or post-deploy check description
+- `GET /health` returns `{"status":"ok"}`.
+- `POST /handoffs` with `author_id`, `severity` (`info`, `warning`, or `critical`), and `summary` returns 201 and an `id`.
+- `GET /handoffs` returns newest first. `GET /handoffs?severity=warning` keeps only that severity.
+- `GET /handoffs/briefing?since=<iso>&until=<iso>` returns `text/markdown`.
+- `.venv/bin/pytest -q` passes before the process is considered ready.
 
 ## Rollback
 
-FILL: rollback approach placeholder
+Stop the uvicorn process. To drop stored notes, delete `data/handoffs.db` and start again. There is no remote release to roll back.
 
 ## Linked acceptance criteria
 
-- FILL: AC-EXAMPLE-1 — link deploy scope to approved AC ids only
+- AC-HANDOFF-CREATE-1 — create persists an id
+- AC-HANDOFF-LIST-1 — default recent list
+- AC-HANDOFF-LIST-2 — severity filter
+- AC-HANDOFF-EXPORT-1 — briefing for a valid window
