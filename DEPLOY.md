@@ -36,3 +36,5 @@ Stop the uvicorn process. To drop stored notes, delete `data/handoffs.db` and st
 - AC-HANDOFF-LIST-1 — default recent list
 - AC-HANDOFF-LIST-2 — severity filter
 - AC-HANDOFF-EXPORT-1 — briefing for a valid window
+
+Alpha ran pytest before considering the service ready.
